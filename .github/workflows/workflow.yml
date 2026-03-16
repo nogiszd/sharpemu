@@ -109,7 +109,7 @@ jobs:
           Compress-Archive -Path (Join-Path $env:PUBLISH_DIR '*') -DestinationPath $archivePath -CompressionLevel Optimal
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ needs.init.outputs.artifact-name }}
           path: ${{ env.RELEASE_DIR }}\${{ needs.init.outputs.archive-name }}
@@ -126,7 +126,7 @@ jobs:
       contents: write
     steps:
       - name: Download build artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: ${{ needs.init.outputs.artifact-name }}
           path: release
