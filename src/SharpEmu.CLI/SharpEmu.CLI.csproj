@@ -31,6 +31,10 @@ SPDX-License-Identifier: GPL-2.0-or-later
   </PropertyGroup>
 
   <ItemGroup>
+    <KnownILLinkPack Update="Microsoft.NET.ILLink.Tasks" ILLinkPackVersion="10.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="..\..\LICENSE.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <TargetPath>LICENSE.txt</TargetPath>
