@@ -128,6 +128,38 @@ public static class PadExports
             return SetReturn(ctx, (int)OrbisGen2Result.ORBIS_GEN2_ERROR_INVALID_ARGUMENT);
         }
 
+        return WriteNeutralPadData(ctx, dataAddress)
+            ? SetReturn(ctx, 0)
+            : SetReturn(ctx, (int)OrbisGen2Result.ORBIS_GEN2_ERROR_MEMORY_FAULT);
+    }
+
+    [SysAbiExport(
+        Nid = "q1cHNfGycLI",
+        ExportName = "scePadRead",
+        Target = Generation.Gen4 | Generation.Gen5,
+        LibraryName = "libScePad")]
+    public static int PadRead(CpuContext ctx)
+    {
+        var handle = unchecked((int)ctx[CpuRegister.Rdi]);
+        var dataAddress = ctx[CpuRegister.Rsi];
+        var count = unchecked((int)ctx[CpuRegister.Rdx]);
+        if (handle != PrimaryPadHandle)
+        {
+            return SetReturn(ctx, OrbisPadErrorInvalidHandle);
+        }
+
+        if (dataAddress == 0 || count < 1 || count > 64)
+        {
+            return SetReturn(ctx, (int)OrbisGen2Result.ORBIS_GEN2_ERROR_INVALID_ARGUMENT);
+        }
+
+        return WriteNeutralPadData(ctx, dataAddress)
+            ? SetReturn(ctx, 1)
+            : SetReturn(ctx, (int)OrbisGen2Result.ORBIS_GEN2_ERROR_MEMORY_FAULT);
+    }
+
+    private static bool WriteNeutralPadData(CpuContext ctx, ulong dataAddress)
+    {
         Span<byte> data = stackalloc byte[PadDataSize];
         data.Clear();
         data[0x04] = 128;
@@ -145,9 +177,7 @@ public static class PadExports
             timestampMicroseconds);
         data[0x68] = 1;
 
-        return ctx.Memory.TryWrite(dataAddress, data)
-            ? SetReturn(ctx, 0)
-            : SetReturn(ctx, (int)OrbisGen2Result.ORBIS_GEN2_ERROR_MEMORY_FAULT);
+        return ctx.Memory.TryWrite(dataAddress, data);
     }
 
     private static int SetReturn(CpuContext ctx, int result)
