@@ -26,6 +26,7 @@ internal static unsafe class VulkanVideoPresenter
     private static uint _windowWidth;
     private static uint _windowHeight;
     private static bool _closed;
+    private static bool _splashHidden;
 
     public static void EnsureStarted(uint width, uint height)
     {
@@ -55,7 +56,15 @@ internal static unsafe class VulkanVideoPresenter
 
             _windowWidth = width;
             _windowHeight = height;
-            _latestPresentation ??= hasSplash
+            _latestPresentation ??= _splashHidden
+                ? new Presentation(
+                    CreateBlackFrame(width, height),
+                    width,
+                    height,
+                    1,
+                    GuestDrawKind.None,
+                    IsSplash: false)
+                : hasSplash
                 ? new Presentation(
                     splashPixels,
                     splashWidth,
